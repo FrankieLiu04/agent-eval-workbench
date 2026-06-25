@@ -1,0 +1,33 @@
+{
+  "runId": "run_synth_20260625_0001",
+  "caseId": "synthetic-dns-latency-001",
+  "status": "completed",
+  "summary": "Synthetic DNS resolver latency is the most likely cause of elevated checkout API latency for the affected client segment.",
+  "confidence": 0.82,
+  "steps": [
+    {
+      "stepId": 1,
+      "name": "Validate symptom scope",
+      "result": "Latency increase is isolated to synthetic-office-a and does not affect synthetic-office-b."
+    },
+    {
+      "stepId": 2,
+      "name": "Inspect synthetic DNS timing",
+      "result": "DNS lookup p95 increased from 35 ms to 780 ms during the reported window."
+    },
+    {
+      "stepId": 3,
+      "name": "Compare application processing time",
+      "result": "Application handler p95 stayed below 90 ms, making backend saturation unlikely."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "dns",
+      "description": "Synthetic resolver endpoint in the affected segment shows elevated lookup latency.",
+      "recommendedAction": "Fail over the synthetic client segment to the secondary resolver and monitor lookup p95."
+    }
+  ],
+  "generatedAt": "2026-06-25T09:16:30Z"
+}

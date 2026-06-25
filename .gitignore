@@ -1,0 +1,39 @@
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# Java and build outputs
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+
+# Node and frontend outputs
+node_modules/
+dist/
+coverage/
+.next/
+
+# Logs and local runtime state
+*.log
+logs/
+tmp/
+.cache/
+
+# Docker/local volumes
+.docker/
+deploy/data/
