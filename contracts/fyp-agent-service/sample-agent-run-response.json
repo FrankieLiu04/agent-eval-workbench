@@ -9,7 +9,7 @@
     "task": "debug bgp neighbor",
     "status": "COMPLETED",
     "fypRunId": "20260626T010000Z-api-import",
-    "artifactPath": "../FYP/experiments/runs/20260626T010000Z-api-import/run.json",
+    "artifactPath": "../netagent-benchmark/experiments/runs/20260626T010000Z-api-import/run.json",
     "exitCode": null,
     "startedAt": "2026-06-26T01:00:00Z",
     "finishedAt": "2026-06-26T01:00:05Z",

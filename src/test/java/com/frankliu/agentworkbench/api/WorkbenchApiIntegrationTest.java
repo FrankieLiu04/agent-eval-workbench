@@ -89,7 +89,7 @@ class WorkbenchApiIntegrationTest {
                                   "source": "MANUAL",
                                   "task": "Run a synthetic benchmark sample",
                                   "status": "COMPLETED",
-                                  "artifactPath": "../FYP/experiments/api-test/run.json"
+                                  "artifactPath": "../netagent-benchmark/experiments/api-test/run.json"
                                 }
                                 """.formatted(experimentId, configId)))
                 .andExpect(status().isCreated())
@@ -199,7 +199,7 @@ class WorkbenchApiIntegrationTest {
                                     "failed_tool_calls": 1
                                   },
                                   "artifacts": {
-                                    "run_log_path": "../FYP/experiments/runs/20260626T010000Z-api-import/run.json",
+                                    "run_log_path": "../netagent-benchmark/experiments/runs/20260626T010000Z-api-import/run.json",
                                     "generated_code_path": null,
                                     "verifier_output_path": null
                                   }

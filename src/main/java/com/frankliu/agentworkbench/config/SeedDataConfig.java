@@ -75,7 +75,7 @@ public class SeedDataConfig {
             benchmarkRun.setSource(RunSource.NETCONFEVAL_IMPORT);
             benchmarkRun.setTask("Translate synthetic reachability, waypoint, and load-balancing requirements.");
             benchmarkRun.setStatus(RunStatus.COMPLETED);
-            benchmarkRun.setArtifactPath("../FYP/experiments/netconfeval-paper/level1-2-20260626-001054/reproduction_summary.md");
+            benchmarkRun.setArtifactPath("../netagent-benchmark/experiments/netconfeval-paper/level1-2-20260626-001054/reproduction_summary.md");
             benchmarkRun.setStartedAt(Instant.parse("2026-06-25T16:15:24Z"));
             benchmarkRun.setFinishedAt(Instant.parse("2026-06-25T16:15:45Z"));
             benchmarkRun = runRepository.save(benchmarkRun);
@@ -111,7 +111,7 @@ public class SeedDataConfig {
             agentRun.setTask("List CML labs and summarize visible MCP tools.");
             agentRun.setStatus(RunStatus.COMPLETED);
             agentRun.setFypRunId("seed-fyp-agent-run");
-            agentRun.setArtifactPath("../FYP/experiments/runs/seed-fyp-agent-run/run.json");
+            agentRun.setArtifactPath("../netagent-benchmark/experiments/runs/seed-fyp-agent-run/run.json");
             agentRun.setStartedAt(Instant.parse("2026-06-26T00:00:00Z"));
             agentRun.setFinishedAt(Instant.parse("2026-06-26T00:00:08Z"));
             agentRun = runRepository.save(agentRun);
