@@ -33,6 +33,7 @@ coverage/
 logs/
 tmp/
 .cache/
+data/
 
 # Docker/local volumes
 .docker/

@@ -1,39 +1,96 @@
-# Network Agent Workbench
+# Agent Evaluation Workbench
 
-Network Agent Workbench is a Java full-stack side project for experimenting with network diagnostic agents, synthetic troubleshooting scenarios, and human-readable run reports.
+Java Spring Boot backend for tracking agent experiments, benchmark runs,
+evaluation results, and metrics. The adjacent FYP repository owns agent
+execution; this service stores metadata and exposes REST APIs.
 
-This repository starts as a clean monorepo skeleton. It intentionally does not include generated Spring Boot or React application code yet.
+## Stack
 
-## Repository Layout
+- Java 21 target
+- Spring Boot 3.5.x
+- Spring Data JPA
+- H2 local profile
+- PostgreSQL profile for later deployment
+- Swagger/OpenAPI
+
+## Layout
 
 ```text
 network-agent-workbench/
-├── contracts/      # API contracts and sample payloads
-├── backend/        # Future Java backend service
-├── frontend/       # Future web UI
-├── mock-agent/     # Future synthetic diagnostic agent harness
-├── deploy/         # Local deployment helpers
-└── docs/           # Architecture, API, and demo notes
+├── src/main/java/          # Spring Boot application code
+├── src/main/resources/     # Spring profiles and config
+├── src/test/               # tests
+├── contracts/fyp-agent-service/
+├── AGENTS.md
+├── TODO.md
+├── pom.xml
+└── README.md
 ```
 
-## Current Scope
+## Local Development
 
-- Define the initial workspace shape.
-- Keep all sample data synthetic.
-- Avoid committing credentials, tokens, private company material, or real network data.
-- Leave framework scaffolding for later focused milestones.
+Docker Desktop is not required.
 
-## Quick Start
+```bash
+./mvnw test
+./mvnw spring-boot:run
+```
 
-At this stage there is no runnable application. Review the planning and contract documents:
+Open:
 
-- [plan.md](plan.md)
-- [docs/architecture.md](docs/architecture.md)
-- [docs/api-contract.md](docs/api-contract.md)
-- [docs/demo-cases.md](docs/demo-cases.md)
+- Swagger UI: <http://localhost:8080/swagger-ui.html>
+- OpenAPI JSON: <http://localhost:8080/v3/api-docs>
+- H2 console: <http://localhost:8080/h2-console>
+- Health: <http://localhost:8080/actuator/health>
 
-## Security Notes
+H2 console:
 
-- Do not commit real API keys, GitHub tokens, LLM keys, CML credentials, internal documents, or production diagnostic logs.
-- Use `.env.example` as a template only.
-- Keep mock data synthetic and safe for public discussion, even though this repository is private.
+```text
+JDBC URL: jdbc:h2:file:./data/agent-workbench
+User: sa
+Password:
+```
+
+## API Surface
+
+```text
+/api/v1/experiments
+/api/v1/agent-configs
+/api/v1/evaluation-runs
+/api/v1/evaluation-results
+/api/v1/run-metrics
+```
+
+Use Swagger for full request and response details.
+
+## Profiles
+
+Local H2:
+
+```bash
+./mvnw spring-boot:run
+```
+
+PostgreSQL:
+
+```bash
+DATABASE_URL=jdbc:postgresql://localhost:5432/agent_workbench \
+DATABASE_USERNAME=agent_workbench \
+DATABASE_PASSWORD=agent_workbench \
+./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
+```
+
+## Boundaries
+
+- Keep this repository as a single Spring Boot backend service.
+- Keep FYP execution code in the adjacent FYP repository.
+- Keep frontend work optional until backend ingestion and FYP integration are
+  useful.
+- Do not commit secrets, internal data, production logs, or unsanitized network
+  artifacts.
+
+## Maintenance
+
+- Use `TODO.md` for milestones and pending work.
+- Use `AGENTS.md` for agent-specific repo instructions.
+- Avoid adding new documentation files unless there is a clear long-term need.

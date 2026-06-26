@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: agent-evaluation-workbench
+  profiles:
+    default: local
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

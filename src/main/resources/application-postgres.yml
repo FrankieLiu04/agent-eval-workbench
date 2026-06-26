@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/agent_workbench}
+    username: ${DATABASE_USERNAME:agent_workbench}
+    password: ${DATABASE_PASSWORD:agent_workbench}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+app:
+  seed-data:
+    enabled: false
