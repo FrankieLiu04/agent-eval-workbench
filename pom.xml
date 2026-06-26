@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>com.frankliu</groupId>
-    <artifactId>agent-evaluation-workbench</artifactId>
+    <artifactId>agent-eval-workbench</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>Agent Evaluation Workbench</name>
+    <name>Agent Eval Workbench</name>
     <description>Spring Boot backend platform for agent experiment and benchmark evaluation tracking.</description>
 
     <properties>

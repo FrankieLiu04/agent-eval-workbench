@@ -2,7 +2,7 @@
 
 ## Project Shape
 
-This repository is a single Spring Boot backend service.
+`agent-eval-workbench` is a single Spring Boot backend service.
 
 - Java code lives under `src/main/java`.
 - Tests live under `src/test`.

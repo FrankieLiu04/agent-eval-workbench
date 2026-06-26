@@ -1,4 +1,4 @@
-# Agent Evaluation Workbench
+# agent-eval-workbench
 
 Java Spring Boot backend for tracking agent experiments, benchmark runs,
 evaluation results, and metrics. The adjacent FYP repository owns agent
@@ -16,7 +16,7 @@ execution; this service stores metadata and exposes REST APIs.
 ## Layout
 
 ```text
-network-agent-workbench/
+agent-eval-workbench/
 ├── src/main/java/          # Spring Boot application code
 ├── src/main/resources/     # Spring profiles and config
 ├── src/test/               # tests

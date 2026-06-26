@@ -1,6 +1,6 @@
 spring:
   application:
-    name: agent-evaluation-workbench
+    name: agent-eval-workbench
   profiles:
     default: local
 
