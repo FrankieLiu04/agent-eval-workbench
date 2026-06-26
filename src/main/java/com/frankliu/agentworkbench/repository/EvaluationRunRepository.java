@@ -23,6 +23,8 @@ public interface EvaluationRunRepository extends JpaRepository<EvaluationRun, Lo
     @EntityGraph(attributePaths = {"experiment", "agentConfig"})
     List<EvaluationRun> findByExperimentIdAndStatus(Long experimentId, RunStatus status);
 
+    boolean existsByFypRunId(String fypRunId);
+
     @Override
     @EntityGraph(attributePaths = {"experiment", "agentConfig"})
     List<EvaluationRun> findAll();

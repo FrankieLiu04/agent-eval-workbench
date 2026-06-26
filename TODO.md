@@ -13,10 +13,10 @@ Status: mostly complete.
 
 ## Milestone 2: FYP Artifact Ingestion
 
-- [ ] Define sanitized `run.json` import payload.
-- [ ] Add import API for FYP run artifacts.
-- [ ] Normalize imported data into run/result/metric tables.
-- [ ] Keep artifact references instead of storing large logs in DB columns.
+- [x] Define sanitized `run.json` import payload.
+- [x] Add import API for FYP run artifacts.
+- [x] Normalize imported data into run/result/metric tables.
+- [x] Keep artifact references instead of storing large logs in DB columns.
 - [ ] Add basic run comparison API.
 
 ## Milestone 3: FYP Agent Service Integration

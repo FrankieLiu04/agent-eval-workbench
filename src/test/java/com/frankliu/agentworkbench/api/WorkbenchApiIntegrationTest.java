@@ -142,6 +142,81 @@ class WorkbenchApiIntegrationTest {
     }
 
     @Test
+    void importFypRunJsonCreatesRunResultAndMetric() throws Exception {
+        String experimentResponse = mockMvc.perform(post("/api/v1/experiments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "FYP import benchmark",
+                                  "domain": "NETWORK_BENCHMARK",
+                                  "description": "FYP import target",
+                                  "datasetName": "fyp-runs",
+                                  "baselineModel": "deepseek-v4-flash",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        long experimentId = JsonTestSupport.extractLong(experimentResponse, "id");
+
+        mockMvc.perform(post("/api/v1/imports/fyp-run-json")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "experimentId": %d,
+                                  "workbench_import": {
+                                    "schema_version": "1.0",
+                                    "run_id": "20260626T010000Z-api-import",
+                                    "timestamp": "2026-06-26T01:00:00Z",
+                                    "task": "debug bgp neighbor"
+                                  },
+                                  "benchmark": {
+                                    "name": "fyp-agent",
+                                    "case_id": "20260626T010000Z-api-import",
+                                    "level": "agent-run"
+                                  },
+                                  "agent": {
+                                    "provider": "openai-compatible",
+                                    "model": "deepseek-v4-flash",
+                                    "reasoning_mode": "default"
+                                  },
+                                  "result": {
+                                    "status": "completed",
+                                    "score": 0.82,
+                                    "final_answer": "BGP neighbor is down.",
+                                    "error_message": null
+                                  },
+                                  "metrics": {
+                                    "duration_seconds": 1.25,
+                                    "prompt_tokens": 100,
+                                    "completion_tokens": 40,
+                                    "total_tokens": 140,
+                                    "tool_calls": 2,
+                                    "mutating_tool_calls": 0,
+                                    "failed_tool_calls": 1
+                                  },
+                                  "artifacts": {
+                                    "run_log_path": "../FYP/experiments/runs/20260626T010000Z-api-import/run.json",
+                                    "generated_code_path": null,
+                                    "verifier_output_path": null
+                                  }
+                                }
+                                """.formatted(experimentId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.run.experimentId").value(experimentId))
+                .andExpect(jsonPath("$.run.source").value("FYP_AGENT_SERVICE"))
+                .andExpect(jsonPath("$.run.status").value("COMPLETED"))
+                .andExpect(jsonPath("$.run.fypRunId").value("20260626T010000Z-api-import"))
+                .andExpect(jsonPath("$.result.score").value(0.82))
+                .andExpect(jsonPath("$.metric.latencyMs").value(1250))
+                .andExpect(jsonPath("$.metric.totalTokens").value(140))
+                .andExpect(jsonPath("$.metric.failedToolCallCount").value(1));
+    }
+
+    @Test
     void validationErrorsReturnStructuredBody() throws Exception {
         mockMvc.perform(post("/api/v1/experiments")
                         .contentType(MediaType.APPLICATION_JSON)

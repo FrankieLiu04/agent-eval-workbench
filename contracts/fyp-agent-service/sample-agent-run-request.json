@@ -1,22 +1,40 @@
 {
-  "caseId": "synthetic-dns-latency-001",
-  "submittedBy": "local-demo-user",
-  "target": {
-    "serviceName": "demo-checkout-api",
-    "environment": "synthetic-lab",
-    "region": "us-test-1"
+  "experimentId": 1,
+  "agentConfigId": null,
+  "workbench_import": {
+    "schema_version": "1.0",
+    "run_id": "20260626T010000Z-api-import",
+    "timestamp": "2026-06-26T01:00:00Z",
+    "task": "debug bgp neighbor"
   },
-  "symptoms": [
-    "Intermittent request latency above 1200 ms",
-    "Occasional DNS lookup timeout from one synthetic client segment"
-  ],
-  "observations": {
-    "timeWindow": "2026-06-25T09:00:00Z/2026-06-25T09:15:00Z",
-    "clientSegment": "synthetic-office-a",
-    "sampleErrorRate": 0.07
+  "benchmark": {
+    "name": "fyp-agent",
+    "case_id": "20260626T010000Z-api-import",
+    "level": "agent-run"
   },
-  "constraints": {
-    "maxSteps": 6,
-    "allowExternalCalls": false
+  "agent": {
+    "provider": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "reasoning_mode": "default"
+  },
+  "result": {
+    "status": "completed",
+    "score": 0.82,
+    "final_answer": "BGP neighbor is down.",
+    "error_message": null
+  },
+  "metrics": {
+    "duration_seconds": 1.25,
+    "prompt_tokens": 100,
+    "completion_tokens": 40,
+    "total_tokens": 140,
+    "tool_calls": 2,
+    "mutating_tool_calls": 0,
+    "failed_tool_calls": 1
+  },
+  "artifacts": {
+    "run_log_path": "../FYP/experiments/runs/20260626T010000Z-api-import/run.json",
+    "generated_code_path": null,
+    "verifier_output_path": null
   }
 }

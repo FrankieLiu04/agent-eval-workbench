@@ -59,6 +59,7 @@ Password:
 /api/v1/evaluation-runs
 /api/v1/evaluation-results
 /api/v1/run-metrics
+/api/v1/imports/fyp-run-json
 ```
 
 Use Swagger for full request and response details.
