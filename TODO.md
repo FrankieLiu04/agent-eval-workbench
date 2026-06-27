@@ -4,7 +4,7 @@
 
 Status: mostly complete.
 
-- [x] Spring Boot 3, Java 21 target, Maven Wrapper.
+- [x] Spring Boot 4.1, Java 25 target, Maven Wrapper.
 - [x] CRUD/query APIs for experiments, configs, runs, results, metrics.
 - [x] H2 local profile and PostgreSQL profile.
 - [x] Swagger/OpenAPI.

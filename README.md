@@ -6,8 +6,8 @@ execution; this service stores metadata and exposes REST APIs.
 
 ## Stack
 
-- Java 21 target
-- Spring Boot 3.5.x
+- Java 25 target
+- Spring Boot 4.1.x
 - Spring Data JPA
 - H2 local profile
 - PostgreSQL profile for later deployment
@@ -17,9 +17,9 @@ execution; this service stores metadata and exposes REST APIs.
 
 ```text
 agent-eval-workbench/
-├── src/main/java/          # Spring Boot application code
-├── src/main/resources/     # Spring profiles and config
-├── src/test/               # tests
+├── src/main/java/          # EN: Spring Boot app code # CN: Spring Boot 应用代码
+├── src/main/resources/     # EN: Spring profiles and config # CN: Spring profiles 和配置
+├── src/test/               # EN: Tests # CN: 测试
 ├── contracts/fyp-agent-service/
 ├── AGENTS.md
 ├── TODO.md
