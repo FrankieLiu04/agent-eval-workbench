@@ -2,6 +2,7 @@ package com.frankliu.agentworkbench.config;
 
 import com.frankliu.agentworkbench.domain.AgentConfig;
 import com.frankliu.agentworkbench.domain.AgentProvider;
+import com.frankliu.agentworkbench.domain.BenchmarkCase;
 import com.frankliu.agentworkbench.domain.EvaluationResult;
 import com.frankliu.agentworkbench.domain.EvaluationRun;
 import com.frankliu.agentworkbench.domain.Experiment;
@@ -12,6 +13,7 @@ import com.frankliu.agentworkbench.domain.RunMetric;
 import com.frankliu.agentworkbench.domain.RunSource;
 import com.frankliu.agentworkbench.domain.RunStatus;
 import com.frankliu.agentworkbench.repository.AgentConfigRepository;
+import com.frankliu.agentworkbench.repository.BenchmarkCaseRepository;
 import com.frankliu.agentworkbench.repository.EvaluationResultRepository;
 import com.frankliu.agentworkbench.repository.EvaluationRunRepository;
 import com.frankliu.agentworkbench.repository.ExperimentRepository;
@@ -23,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Configuration
 public class SeedDataConfig {
@@ -54,6 +57,80 @@ public class SeedDataConfig {
         };
     }
 
+    @Bean
+    @ConditionalOnProperty(name = "app.seed-data.enabled", havingValue = "true")
+    CommandLineRunner benchmarkQueueSeed(
+            BenchmarkCaseRepository caseRepository,
+            AgentConfigRepository agentConfigRepository
+    ) {
+        return args -> {
+            ensureBenchmarkCase(caseRepository);
+            ensureLocalMockConfig(agentConfigRepository);
+            ensureDeepSeekComparisonConfigs(agentConfigRepository);
+        };
+    }
+
+    private void ensureBenchmarkCase(BenchmarkCaseRepository repository) {
+        String caseId = "replay/ospf-adjacency-down-v1";
+        if (repository.existsByCaseId(caseId)) {
+            return;
+        }
+        BenchmarkCase benchmarkCase = new BenchmarkCase();
+        benchmarkCase.setCaseId(caseId);
+        benchmarkCase.setTitle("OSPF adjacency down");
+        benchmarkCase.setSchemaVersion("1.0");
+        benchmarkCase.setEnabled(true);
+        repository.save(benchmarkCase);
+    }
+
+    private void ensureLocalMockConfig(AgentConfigRepository repository) {
+        if (repository.existsByProviderAndModelName(AgentProvider.LOCAL_MOCK, "case-reference")) {
+            return;
+        }
+        AgentConfig config = new AgentConfig();
+        config.setName("Local Mock Case Reference");
+        config.setProvider(AgentProvider.LOCAL_MOCK);
+        config.setModelName("case-reference");
+        config.setPromptVersion("deterministic_v1");
+        config.setToolExposure("replay");
+        config.setMaxSteps(7);
+        config.setReasoningMode(ReasoningMode.DEFAULT);
+        repository.save(config);
+    }
+
+    private void ensureDeepSeekComparisonConfigs(AgentConfigRepository repository) {
+        for (String model : List.of("deepseek-v4-flash", "deepseek-v4-pro")) {
+            for (ReasoningMode mode : List.of(ReasoningMode.DISABLED, ReasoningMode.HIGH, ReasoningMode.MAX)) {
+                ensureDeepSeekProfile(repository, model, mode);
+            }
+        }
+    }
+
+    private AgentConfig ensureDeepSeekProfile(
+            AgentConfigRepository repository,
+            String model,
+            ReasoningMode mode
+    ) {
+        return repository.findFirstByProviderAndModelNameAndReasoningMode(AgentProvider.DEEPSEEK, model, mode)
+                .orElseGet(() -> {
+                    AgentConfig config = new AgentConfig();
+                    String modelLabel = model.endsWith("flash") ? "Flash" : "Pro";
+                    String effortLabel = mode == ReasoningMode.DISABLED ? "None" : titleCase(mode.name());
+                    config.setName("DeepSeek V4 " + modelLabel + " / " + effortLabel);
+                    config.setProvider(AgentProvider.DEEPSEEK);
+                    config.setModelName(model);
+                    config.setPromptVersion("network_agent_v1");
+                    config.setToolExposure("case_allowlist");
+                    config.setMaxSteps(20);
+                    config.setReasoningMode(mode);
+                    return repository.save(config);
+                });
+    }
+
+    private String titleCase(String value) {
+        return value.charAt(0) + value.substring(1).toLowerCase();
+    }
+
     private Experiment createBenchmarkExperiment(ExperimentRepository repository) {
         Experiment experiment = new Experiment();
         experiment.setName("NetConfEval Step 1 Baseline");
@@ -77,15 +154,7 @@ public class SeedDataConfig {
     }
 
     private AgentConfig createAgentConfig(AgentConfigRepository repository) {
-        AgentConfig config = new AgentConfig();
-        config.setName("DeepSeek V4 Flash Full Tool Access");
-        config.setProvider(AgentProvider.DEEPSEEK);
-        config.setModelName("deepseek-v4-flash");
-        config.setPromptVersion("full_access_v1");
-        config.setToolExposure("all");
-        config.setMaxSteps(20);
-        config.setReasoningMode(ReasoningMode.DEFAULT);
-        return repository.save(config);
+        return ensureDeepSeekProfile(repository, "deepseek-v4-flash", ReasoningMode.DISABLED);
     }
 
     private EvaluationRun createBenchmarkRun(

@@ -5,6 +5,7 @@ import com.frankliu.agentworkbench.api.error.ConflictException;
 import com.frankliu.agentworkbench.api.error.NotFoundException;
 import com.frankliu.agentworkbench.domain.EvaluationResult;
 import com.frankliu.agentworkbench.domain.EvaluationRun;
+import com.frankliu.agentworkbench.domain.RunSource;
 import com.frankliu.agentworkbench.repository.EvaluationResultRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ public class EvaluationResultService {
 
     public EvaluationResultDtos.Response update(Long id, EvaluationResultDtos.Request request) {
         EvaluationResult result = getEntity(id);
+        requireMutable(result.getRun());
         applyRequest(result, request);
         result.setUpdatedAt(Instant.now());
         return toResponse(repository.save(result));
@@ -59,6 +61,7 @@ public class EvaluationResultService {
 
     public void delete(Long id) {
         EvaluationResult result = getEntity(id);
+        requireMutable(result.getRun());
         repository.delete(result);
     }
 
@@ -69,9 +72,11 @@ public class EvaluationResultService {
 
     private void applyRequest(EvaluationResult result, EvaluationResultDtos.Request request) {
         EvaluationRun run = runService.getEntity(request.runId());
+        requireMutable(run);
         result.setRun(run);
         result.setScore(request.score());
         result.setAccuracy(request.accuracy());
+        result.setPassed(request.passed());
         result.setSuccessCount(request.successCount());
         result.setFailCount(request.failCount());
         result.setWrongCount(request.wrongCount());
@@ -81,12 +86,19 @@ public class EvaluationResultService {
         result.setSummary(request.summary());
     }
 
+    private void requireMutable(EvaluationRun run) {
+        if (run.getSource() == RunSource.NETAGENT_BENCHMARK_IMPORT) {
+            throw new ConflictException("Imported benchmark results are immutable");
+        }
+    }
+
     private EvaluationResultDtos.Response toResponse(EvaluationResult result) {
         return new EvaluationResultDtos.Response(
                 result.getId(),
                 result.getRun().getId(),
                 result.getScore(),
                 result.getAccuracy(),
+                result.getPassed(),
                 result.getSuccessCount(),
                 result.getFailCount(),
                 result.getWrongCount(),

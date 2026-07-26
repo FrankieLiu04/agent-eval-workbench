@@ -5,6 +5,7 @@ import com.frankliu.agentworkbench.api.error.ConflictException;
 import com.frankliu.agentworkbench.api.error.NotFoundException;
 import com.frankliu.agentworkbench.domain.EvaluationRun;
 import com.frankliu.agentworkbench.domain.RunMetric;
+import com.frankliu.agentworkbench.domain.RunSource;
 import com.frankliu.agentworkbench.repository.RunMetricRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ public class RunMetricService {
 
     public RunMetricDtos.Response update(Long id, RunMetricDtos.Request request) {
         RunMetric metric = getEntity(id);
+        requireMutable(metric.getRun());
         applyRequest(metric, request);
         metric.setUpdatedAt(Instant.now());
         return toResponse(repository.save(metric));
@@ -59,6 +61,7 @@ public class RunMetricService {
 
     public void delete(Long id) {
         RunMetric metric = getEntity(id);
+        requireMutable(metric.getRun());
         repository.delete(metric);
     }
 
@@ -69,6 +72,7 @@ public class RunMetricService {
 
     private void applyRequest(RunMetric metric, RunMetricDtos.Request request) {
         EvaluationRun run = runService.getEntity(request.runId());
+        requireMutable(run);
         metric.setRun(run);
         metric.setLatencyMs(request.latencyMs());
         metric.setPromptTokens(request.promptTokens());
@@ -77,6 +81,12 @@ public class RunMetricService {
         metric.setToolCallCount(request.toolCallCount());
         metric.setMutatingToolCallCount(request.mutatingToolCallCount());
         metric.setFailedToolCallCount(request.failedToolCallCount());
+    }
+
+    private void requireMutable(EvaluationRun run) {
+        if (run.getSource() == RunSource.NETAGENT_BENCHMARK_IMPORT) {
+            throw new ConflictException("Imported benchmark metrics are immutable");
+        }
     }
 
     private RunMetricDtos.Response toResponse(RunMetric metric) {

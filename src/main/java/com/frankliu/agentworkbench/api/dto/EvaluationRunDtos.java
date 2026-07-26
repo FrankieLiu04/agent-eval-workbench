@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import tools.jackson.databind.JsonNode;
 
 public final class EvaluationRunDtos {
 
@@ -19,7 +21,7 @@ public final class EvaluationRunDtos {
             @NotNull RunSource source,
             @NotBlank @Size(max = 2000) String task,
             RunStatus status,
-            @Size(max = 120) String fypRunId,
+            @Size(max = 120) String runId,
             @Size(max = 1000) String artifactPath,
             Integer exitCode,
             Instant startedAt,
@@ -37,7 +39,12 @@ public final class EvaluationRunDtos {
             RunSource source,
             String task,
             RunStatus status,
-            String fypRunId,
+            String runId,
+            String schemaVersion,
+            String caseId,
+            String taskMode,
+            String agentProvider,
+            String agentModel,
             String artifactPath,
             Integer exitCode,
             Instant startedAt,
@@ -45,6 +52,29 @@ public final class EvaluationRunDtos {
             String errorMessage,
             Instant createdAt,
             Instant updatedAt
+    ) {
+    }
+
+    public record SummaryResponse(
+            Response run,
+            BigDecimal score,
+            Long durationMs,
+            Integer totalTokens,
+            Integer toolCalls
+    ) {
+    }
+
+    public record DetailResponse(
+            Response run,
+            BigDecimal score,
+            Long durationMs,
+            Integer promptTokens,
+            Integer completionTokens,
+            Integer totalTokens,
+            Integer toolCalls,
+            Integer mutatingToolCalls,
+            Integer failedToolCalls,
+            JsonNode artifact
     ) {
     }
 }

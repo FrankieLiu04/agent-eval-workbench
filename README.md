@@ -1,8 +1,9 @@
 # agent-eval-workbench
 
-Java Spring Boot backend for tracking agent experiments, benchmark runs,
-evaluation results, and metrics. The adjacent FYP repository owns agent
-execution; this service stores metadata and exposes REST APIs.
+Evaluation panel and Spring Boot control plane for launching and inspecting
+Netagent benchmark runs. The adjacent `netagent-benchmark` repository owns
+agent execution and scoring; this service queues work, imports its sanitized
+`run.json`, and presents the complete trace as experiment evidence.
 
 ## Stack
 
@@ -12,14 +13,15 @@ execution; this service stores metadata and exposes REST APIs.
 - H2 local profile
 - PostgreSQL profile for later deployment
 - Swagger/OpenAPI
+- Server-hosted HTML, CSS, and JavaScript panel with no frontend build step
 
 ## Layout
 
 ```text
 agent-eval-workbench/
-├── src/main/java/          # EN: Spring Boot app code # CN: Spring Boot 应用代码
-├── src/main/resources/     # EN: Spring profiles and config # CN: Spring profiles 和配置
-├── src/test/               # EN: Tests # CN: 测试
+├── src/main/java/          # Spring Boot API, import, and persistence
+├── src/main/resources/     # Profiles and the static evaluation panel
+├── src/test/               # Integration tests and schema 1.1 fixture
 ├── contracts/fyp-agent-service/
 ├── AGENTS.md
 ├── TODO.md
@@ -38,6 +40,7 @@ Docker Desktop is not required.
 
 Open:
 
+- Evaluation panel: <http://localhost:8080/>
 - Swagger UI: <http://localhost:8080/swagger-ui.html>
 - OpenAPI JSON: <http://localhost:8080/v3/api-docs>
 - H2 console: <http://localhost:8080/h2-console>
@@ -56,13 +59,77 @@ Password:
 ```text
 /api/v1/experiments
 /api/v1/agent-configs
+/api/v1/benchmark-cases
+/api/v1/benchmark-jobs
+/api/v1/benchmark-jobs/batches
+/api/v1/benchmark-jobs/batches/{batchId}/comparison
 /api/v1/evaluation-runs
 /api/v1/evaluation-results
 /api/v1/run-metrics
-/api/v1/imports/fyp-run-json
+/api/v1/imports/netagent-run-json
 ```
 
 Use Swagger for full request and response details.
+
+## Compare Replay Profiles
+
+Build both applications, start Workbench, and then start the optional Netagent
+worker in another terminal:
+
+```bash
+cd ../netagent-benchmark
+mise exec -- mvn package
+java -jar target/netagent-benchmark-0.1.0-SNAPSHOT.jar worker
+```
+
+Open <http://localhost:8080/>, select an experiment and case, choose one or more
+model profiles, and set the repetition count. One batch creates
+`profiles x repetitions` persistent `QUEUED` jobs. Workers claim them normally,
+so comparison does not introduce a second execution path.
+
+The default comparison matrix contains the two official DeepSeek V4 API model
+IDs, `deepseek-v4-flash` and `deepseek-v4-pro`, at three effective reasoning
+modes: `DISABLED` (shown as None), `HIGH`, and `MAX`. The job snapshot freezes
+the profile name, model, prompt version, tool exposure, max turns, reasoning
+mode, and case schema version before the first worker claim.
+
+The comparison table reports pass rate, average score, latency, total tokens,
+tool calls, failed tool calls, and tool success rate. Pass rate uses only runs
+with an explicit benchmark evaluation; execution failures and cancellations
+are reported separately rather than treated as incorrect model answers. Tool
+success rate is `(tool calls - failed tool calls) / tool calls`.
+
+The seeded `Local Mock Case Reference` profile runs the deterministic OSPF
+replay without an API key. The six DeepSeek profiles use `DEEPSEEK_API_KEY`
+from the worker process environment; Workbench never stores or sends the key.
+
+Run a worker for at most one claim:
+
+```bash
+java -jar target/netagent-benchmark-0.1.0-SNAPSHOT.jar worker --once
+```
+
+Queued jobs can be cancelled immediately. Running cancellation is delivered on
+the next heartbeat. The worker also enforces each job timeout, while Workbench
+marks expired timeouts and worker leases explicitly.
+
+## Import A Netagent Run
+
+The request body is the unchanged Netagent schema 1.1 artifact. The
+`experimentId` query parameter supplies the Workbench context that is not part
+of the benchmark-owned artifact.
+
+```bash
+curl -X POST \
+  'http://localhost:8080/api/v1/imports/netagent-run-json?experimentId=2' \
+  -H 'Content-Type: application/json' \
+  --data-binary '@/path/to/netagent-benchmark/experiments/runs/<run>/run.json'
+```
+
+Workbench stores searchable run, score, and metric summaries in the database.
+It copies the complete artifact into
+`./data/artifacts/<run-id>/run.json`; configure another root with
+`ARTIFACT_ROOT`.
 
 ## Profiles
 
@@ -85,8 +152,10 @@ DATABASE_PASSWORD=agent_workbench \
 
 - Keep this repository as a single Spring Boot backend service.
 - Keep FYP execution code in the adjacent FYP repository.
-- Keep frontend work optional until backend ingestion and FYP integration are
-  useful.
+- Keep the panel focused on benchmark launch, evidence inspection, and model
+  comparison rather than turning it into a generic dashboard platform.
+- Keep the current control plane on its default loopback address. Add operator
+  and worker authentication before binding it to another interface.
 - Do not commit secrets, internal data, production logs, or unsanitized network
   artifacts.
 

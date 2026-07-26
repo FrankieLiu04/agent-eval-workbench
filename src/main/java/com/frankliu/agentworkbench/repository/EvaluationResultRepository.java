@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.List;
 
 public interface EvaluationResultRepository extends JpaRepository<EvaluationResult, Long> {
 
@@ -12,4 +13,6 @@ public interface EvaluationResultRepository extends JpaRepository<EvaluationResu
     Optional<EvaluationResult> findByRunId(Long runId);
 
     boolean existsByRunId(Long runId);
+
+    List<EvaluationResult> findAllByRunIdIn(List<Long> runIds);
 }

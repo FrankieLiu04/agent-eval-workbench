@@ -29,6 +29,8 @@ public class EvaluationResult {
 
     private BigDecimal accuracy;
 
+    private Boolean passed;
+
     private Integer successCount;
 
     private Integer failCount;
@@ -80,6 +82,14 @@ public class EvaluationResult {
 
     public void setAccuracy(BigDecimal accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public Boolean getPassed() {
+        return passed;
+    }
+
+    public void setPassed(Boolean passed) {
+        this.passed = passed;
     }
 
     public Integer getSuccessCount() {

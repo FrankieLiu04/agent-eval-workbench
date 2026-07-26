@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netagent Eval Workbench</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Network Agent Evaluation</p>
+      <h1>Workbench</h1>
+    </div>
+    <div class="system-state">
+      <span class="pulse"></span>
+      Worker-backed replay queue
+    </div>
+  </header>
+
+  <section class="dispatch-console" aria-labelledby="dispatch-title">
+    <div class="dispatch-heading">
+      <p class="eyebrow">Dispatch Console</p>
+      <h2 id="dispatch-title">Compare controlled replays</h2>
+      <p>Run one versioned case across selected model and reasoning profiles. Each attempt keeps its launch configuration as immutable benchmark evidence.</p>
+    </div>
+    <form id="launch-form" class="launch-form">
+      <label>
+        <span>Experiment</span>
+        <select id="experiment-select" required></select>
+      </label>
+      <label>
+        <span>Case</span>
+        <select id="case-select" required></select>
+      </label>
+      <label>
+        <span>Repetitions</span>
+        <input id="repetitions-input" type="number" min="1" max="20" value="1" required>
+      </label>
+      <fieldset class="profile-picker">
+        <legend>Model + reasoning profiles</legend>
+        <div id="config-options" class="profile-options"></div>
+      </fieldset>
+      <button id="launch-job" class="primary-button" type="submit">Queue comparison</button>
+    </form>
+    <div id="job-state" class="job-state" aria-live="polite">
+      <p>No benchmark batch selected.</p>
+    </div>
+  </section>
+
+  <main class="workspace">
+    <aside class="run-browser">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Run Archive</p>
+          <h2>Evidence log</h2>
+        </div>
+        <button id="refresh-runs" class="icon-button" type="button" aria-label="Refresh runs">Refresh</button>
+      </div>
+
+      <label class="search-field">
+        <span>Filter runs</span>
+        <input id="run-filter" type="search" placeholder="Case, model, status...">
+      </label>
+
+      <p id="run-count" class="run-count">Loading runs...</p>
+      <div id="run-list" class="run-list" aria-live="polite"></div>
+    </aside>
+
+    <section id="run-detail" class="run-detail" aria-live="polite">
+      <div class="empty-state">
+        <span class="empty-index">00</span>
+        <p class="eyebrow">No run selected</p>
+        <h2>Select an artifact to inspect its evidence trail.</h2>
+        <p>The detail view keeps model output, tool observations, policy audit, and deterministic scoring together.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

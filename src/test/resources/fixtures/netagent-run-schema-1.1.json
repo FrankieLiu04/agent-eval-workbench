@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.1",
+  "run_id": "20260726T071207Z-a7c15e98",
+  "timestamp": "2026-07-26T07:12:07.680653Z",
+  "task": {
+    "description": "Routers R1 and R2 should form an OSPF adjacency in area 0, but no neighbor relationship is established. Collect evidence and identify the root cause.",
+    "case_id": "replay/ospf-adjacency-down-v1",
+    "mode": "case-run"
+  },
+  "agent": {
+    "provider": "scripted",
+    "model": "case-reference",
+    "reasoning_mode": "DISABLED"
+  },
+  "result": {
+    "status": "completed",
+    "score": 1,
+    "final_answer": "Diagnosis: the OSPF hello and dead timers do not match.",
+    "error_message": null
+  },
+  "metrics": {
+    "duration_seconds": 0.002,
+    "prompt_tokens": 300,
+    "completion_tokens": 80,
+    "total_tokens": 380,
+    "tool_calls": 2,
+    "mutating_tool_calls": 0,
+    "failed_tool_calls": 0
+  },
+  "trace": {
+    "steps": [
+      {
+        "step": 0,
+        "finish_reason": "tool_calls",
+        "content": "Checking the neighbor table on R1.",
+        "tool_calls": [
+          {
+            "id": "call-0",
+            "name": "show_ip_ospf_neighbor",
+            "arguments": {"device": "R1"}
+          }
+        ],
+        "tool_results": [
+          {
+            "tool_call_id": "call-0",
+            "tool_name": "show_ip_ospf_neighbor",
+            "success": true,
+            "result": "R1#show ip ospf neighbor\n\nNeighbor ID  State  Address  Interface\n"
+          }
+        ],
+        "tool_audit": [
+          {
+            "step": 0,
+            "tool_call_id": "call-0",
+            "tool_name": "show_ip_ospf_neighbor",
+            "arguments": {"device": "R1"},
+            "mutating": false,
+            "success": true,
+            "elapsed_seconds": 0.000176,
+            "result_size_chars": 67,
+            "error": null,
+            "policy_denied": false
+          }
+        ],
+        "usage": {"prompt_tokens": 40, "completion_tokens": 10},
+        "elapsed_seconds": 0.001952
+      },
+      {
+        "step": 1,
+        "finish_reason": "tool_calls",
+        "content": "Comparing the interface OSPF configuration on R2.",
+        "tool_calls": [
+          {
+            "id": "call-1",
+            "name": "show_running_config",
+            "arguments": {"device": "R2"}
+          }
+        ],
+        "tool_results": [
+          {
+            "tool_call_id": "call-1",
+            "tool_name": "show_running_config",
+            "success": true,
+            "result": "interface GigabitEthernet0/0\n ip ospf hello-interval 30\n ip ospf 1 area 0"
+          }
+        ],
+        "tool_audit": [],
+        "usage": {"prompt_tokens": 200, "completion_tokens": 50},
+        "elapsed_seconds": 0.00003
+      },
+      {
+        "step": 2,
+        "finish_reason": "stop",
+        "content": "Diagnosis: the OSPF hello and dead timers do not match.",
+        "tool_calls": [],
+        "tool_results": [],
+        "tool_audit": [],
+        "usage": {"prompt_tokens": 60, "completion_tokens": 20},
+        "elapsed_seconds": 0.000018
+      }
+    ],
+    "tool_audit": [],
+    "tool_audit_summary": {
+      "total_calls": 2,
+      "mutating_calls": 0,
+      "read_only_calls": 2,
+      "failed_calls": 0,
+      "successful_calls": 2,
+      "tool_names": ["show_ip_ospf_neighbor", "show_running_config"]
+    }
+  },
+  "evaluation": {
+    "evaluator": "evidence",
+    "score": 1,
+    "passed": true,
+    "checks": [
+      {
+        "name": "tool_call:show_ip_ospf_neighbor",
+        "passed": true,
+        "detail": "called successfully at step 0"
+      },
+      {
+        "name": "tool_call:show_running_config",
+        "passed": true,
+        "detail": "called successfully at step 1"
+      },
+      {
+        "name": "answer_mentions:hello",
+        "passed": true,
+        "detail": "final answer contains 'hello'"
+      },
+      {
+        "name": "answer_mentions:dead",
+        "passed": true,
+        "detail": "final answer contains 'dead'"
+      }
+    ]
+  },
+  "artifacts": {
+    "run_log_path": "experiments/runs/20260726T071207Z-a7c15e98-replay-ospf-adjacency-down-v1/run.json"
+  }
+}

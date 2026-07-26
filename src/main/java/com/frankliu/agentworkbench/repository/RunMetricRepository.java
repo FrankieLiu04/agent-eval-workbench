@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.List;
 
 public interface RunMetricRepository extends JpaRepository<RunMetric, Long> {
 
@@ -12,4 +13,6 @@ public interface RunMetricRepository extends JpaRepository<RunMetric, Long> {
     Optional<RunMetric> findByRunId(Long runId);
 
     boolean existsByRunId(Long runId);
+
+    List<RunMetric> findAllByRunIdIn(List<Long> runIds);
 }

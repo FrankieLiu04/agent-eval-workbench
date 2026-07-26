@@ -10,5 +10,7 @@ spring:
     open-in-view: false
 
 app:
+  artifacts:
+    root: ${ARTIFACT_ROOT:./data/artifacts}
   seed-data:
     enabled: false

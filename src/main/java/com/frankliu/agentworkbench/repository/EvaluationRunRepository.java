@@ -25,6 +25,9 @@ public interface EvaluationRunRepository extends JpaRepository<EvaluationRun, Lo
 
     boolean existsByFypRunId(String fypRunId);
 
+    @EntityGraph(attributePaths = {"experiment", "agentConfig"})
+    List<EvaluationRun> findAllByOrderByStartedAtDescIdDesc();
+
     @Override
     @EntityGraph(attributePaths = {"experiment", "agentConfig"})
     List<EvaluationRun> findAll();

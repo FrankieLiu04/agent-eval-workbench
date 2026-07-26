@@ -5,6 +5,7 @@ spring:
     default: local
 
 server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
   port: 8080
 
 springdoc:
@@ -16,3 +17,9 @@ management:
     web:
       exposure:
         include: health,info
+
+app:
+  benchmark:
+    job-timeout-seconds: ${BENCHMARK_JOB_TIMEOUT_SECONDS:300}
+    worker-lease-seconds: ${BENCHMARK_WORKER_LEASE_SECONDS:30}
+    sweep-ms: ${BENCHMARK_SWEEP_MS:5000}

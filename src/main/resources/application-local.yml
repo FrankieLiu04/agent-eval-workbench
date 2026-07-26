@@ -17,5 +17,7 @@ spring:
         format_sql: true
 
 app:
+  artifacts:
+    root: ${ARTIFACT_ROOT:./data/artifacts}
   seed-data:
     enabled: true

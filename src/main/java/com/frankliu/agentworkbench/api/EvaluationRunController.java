@@ -30,17 +30,19 @@ public class EvaluationRunController {
     }
 
     @GetMapping
-    public List<EvaluationRunDtos.Response> list(
+    public List<EvaluationRunDtos.SummaryResponse> list(
             @RequestParam(required = false) Long experimentId,
             @RequestParam(required = false) RunStatus status,
-            @RequestParam(required = false) RunSource source
+            @RequestParam(required = false) RunSource source,
+            @RequestParam(required = false) String caseId,
+            @RequestParam(required = false) String model
     ) {
-        return service.list(experimentId, status, source);
+        return service.list(experimentId, status, source, caseId, model);
     }
 
     @GetMapping("/{id}")
-    public EvaluationRunDtos.Response get(@PathVariable Long id) {
-        return service.get(id);
+    public EvaluationRunDtos.DetailResponse get(@PathVariable Long id) {
+        return service.getDetail(id);
     }
 
     @PostMapping

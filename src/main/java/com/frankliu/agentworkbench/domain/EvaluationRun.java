@@ -41,8 +41,23 @@ public class EvaluationRun {
     @Column(nullable = false, length = 40)
     private RunStatus status = RunStatus.PENDING;
 
-    @Column(length = 120)
+    @Column(length = 120, unique = true)
     private String fypRunId;
+
+    @Column(length = 40)
+    private String schemaVersion;
+
+    @Column(length = 200)
+    private String caseId;
+
+    @Column(length = 80)
+    private String taskMode;
+
+    @Column(length = 80)
+    private String agentProvider;
+
+    @Column(length = 160)
+    private String agentModel;
 
     @Column(length = 1000)
     private String artifactPath;
@@ -116,6 +131,46 @@ public class EvaluationRun {
 
     public void setFypRunId(String fypRunId) {
         this.fypRunId = fypRunId;
+    }
+
+    public String getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
+    }
+
+    public String getCaseId() {
+        return caseId;
+    }
+
+    public void setCaseId(String caseId) {
+        this.caseId = caseId;
+    }
+
+    public String getTaskMode() {
+        return taskMode;
+    }
+
+    public void setTaskMode(String taskMode) {
+        this.taskMode = taskMode;
+    }
+
+    public String getAgentProvider() {
+        return agentProvider;
+    }
+
+    public void setAgentProvider(String agentProvider) {
+        this.agentProvider = agentProvider;
+    }
+
+    public String getAgentModel() {
+        return agentModel;
+    }
+
+    public void setAgentModel(String agentModel) {
+        this.agentModel = agentModel;
     }
 
     public String getArtifactPath() {

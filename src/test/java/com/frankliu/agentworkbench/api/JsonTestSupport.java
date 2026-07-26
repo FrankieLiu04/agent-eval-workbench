@@ -19,4 +19,12 @@ final class JsonTestSupport {
         }
         return node.asLong();
     }
+
+    static String extractString(String json, String fieldName) throws IOException {
+        JsonNode node = OBJECT_MAPPER.readTree(json).get(fieldName);
+        if (node == null || !node.isTextual()) {
+            throw new IllegalArgumentException("Field is missing or is not a string: " + fieldName);
+        }
+        return node.asText();
+    }
 }
