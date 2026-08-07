@@ -86,12 +86,14 @@ public class EvaluationRunService {
                 toResponse(run),
                 result == null ? null : result.getScore(),
                 metric == null ? null : metric.getLatencyMs(),
+                metric == null ? null : metric.getAgentStepCount(),
                 metric == null ? null : metric.getPromptTokens(),
                 metric == null ? null : metric.getCompletionTokens(),
                 metric == null ? null : metric.getTotalTokens(),
                 metric == null ? null : metric.getToolCallCount(),
                 metric == null ? null : metric.getMutatingToolCallCount(),
                 metric == null ? null : metric.getFailedToolCallCount(),
+                metric == null ? null : metric.getDuplicateToolCallCount(),
                 artifactStorage.read(run.getArtifactPath())
         );
     }
@@ -180,8 +182,10 @@ public class EvaluationRunService {
                 toResponse(run),
                 result == null ? null : result.getScore(),
                 metric == null ? null : metric.getLatencyMs(),
+                metric == null ? null : metric.getAgentStepCount(),
                 metric == null ? null : metric.getTotalTokens(),
-                metric == null ? null : metric.getToolCallCount()
+                metric == null ? null : metric.getToolCallCount(),
+                metric == null ? null : metric.getDuplicateToolCallCount()
         );
     }
 }
