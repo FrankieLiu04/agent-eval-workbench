@@ -25,6 +25,8 @@ public class RunMetric {
 
     private Long latencyMs;
 
+    private Integer agentStepCount;
+
     private Integer promptTokens;
 
     private Integer completionTokens;
@@ -36,6 +38,8 @@ public class RunMetric {
     private Integer mutatingToolCallCount;
 
     private Integer failedToolCallCount;
+
+    private Integer duplicateToolCallCount;
 
     private Instant createdAt = Instant.now();
 
@@ -63,6 +67,14 @@ public class RunMetric {
 
     public void setLatencyMs(Long latencyMs) {
         this.latencyMs = latencyMs;
+    }
+
+    public Integer getAgentStepCount() {
+        return agentStepCount;
+    }
+
+    public void setAgentStepCount(Integer agentStepCount) {
+        this.agentStepCount = agentStepCount;
     }
 
     public Integer getPromptTokens() {
@@ -111,6 +123,14 @@ public class RunMetric {
 
     public void setFailedToolCallCount(Integer failedToolCallCount) {
         this.failedToolCallCount = failedToolCallCount;
+    }
+
+    public Integer getDuplicateToolCallCount() {
+        return duplicateToolCallCount;
+    }
+
+    public void setDuplicateToolCallCount(Integer duplicateToolCallCount) {
+        this.duplicateToolCallCount = duplicateToolCallCount;
     }
 
     public Instant getCreatedAt() {
