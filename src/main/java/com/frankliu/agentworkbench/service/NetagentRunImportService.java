@@ -128,12 +128,14 @@ public class NetagentRunImportService {
         RunMetric metric = new RunMetric();
         metric.setRun(run);
         metric.setLatencyMs(toMillis(source.durationSeconds()));
+        metric.setAgentStepCount(source.agentSteps());
         metric.setPromptTokens(source.promptTokens());
         metric.setCompletionTokens(source.completionTokens());
         metric.setTotalTokens(source.totalTokens());
         metric.setToolCallCount(source.toolCalls());
         metric.setMutatingToolCallCount(source.mutatingToolCalls());
         metric.setFailedToolCallCount(source.failedToolCalls());
+        metric.setDuplicateToolCallCount(source.duplicateToolCalls());
         return metric;
     }
 
@@ -169,7 +171,8 @@ public class NetagentRunImportService {
     private void validateBenchmarkEvidence(NetagentRunArtifact artifact) {
         NetagentRunArtifact.Metrics metrics = artifact.metrics();
         if (metrics.failedToolCalls() > metrics.toolCalls()
-                || metrics.mutatingToolCalls() > metrics.toolCalls()) {
+                || metrics.mutatingToolCalls() > metrics.toolCalls()
+                || (metrics.duplicateToolCalls() != null && metrics.duplicateToolCalls() > metrics.toolCalls())) {
             throw new IllegalArgumentException("Invalid Netagent artifact tool-call metrics");
         }
         if (metrics.promptTokens() != null && metrics.completionTokens() != null
