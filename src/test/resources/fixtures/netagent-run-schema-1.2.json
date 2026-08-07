@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.2",
+  "run_id": "20260807T010000Z-schema12",
+  "timestamp": "2026-08-07T01:00:00Z",
+  "task": {
+    "description": "Diagnose a network incident and collect grounded evidence.",
+    "case_id": "replay/ospf-adjacency-down-v1",
+    "mode": "case-run"
+  },
+  "agent": {
+    "provider": "scripted",
+    "model": "case-reference",
+    "reasoning_mode": "DISABLED"
+  },
+  "result": {
+    "status": "completed",
+    "score": 1,
+    "final_answer": "Diagnosis complete.",
+    "error_message": null
+  },
+  "metrics": {
+    "agent_steps": 3,
+    "duration_seconds": 0.25,
+    "prompt_tokens": 300,
+    "completion_tokens": 80,
+    "total_tokens": 380,
+    "tool_calls": 4,
+    "mutating_tool_calls": 0,
+    "failed_tool_calls": 0,
+    "duplicate_tool_calls": 1
+  },
+  "trace": {
+    "steps": [],
+    "tool_audit": [],
+    "tool_audit_summary": {
+      "total_calls": 4,
+      "mutating_calls": 0,
+      "read_only_calls": 4,
+      "failed_calls": 0,
+      "successful_calls": 4,
+      "tool_names": []
+    }
+  },
+  "evaluation": {
+    "evaluator": "evidence",
+    "score": 1,
+    "passed": true,
+    "checks": []
+  },
+  "artifacts": {
+    "run_log_path": "experiments/runs/20260807T010000Z-schema12/run.json"
+  }
+}
