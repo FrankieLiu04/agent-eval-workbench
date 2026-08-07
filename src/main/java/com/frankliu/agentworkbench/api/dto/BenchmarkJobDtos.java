@@ -115,13 +115,18 @@ public final class BenchmarkJobDtos {
             int executionFailures,
             int timedOut,
             int cancelled,
+            int attempted,
             BigDecimal passRate,
+            BigDecimal reliabilityRate,
             BigDecimal averageScore,
             BigDecimal averageLatencyMs,
             BigDecimal averageTotalTokens,
+            BigDecimal averageAgentSteps,
             BigDecimal averageToolCalls,
             BigDecimal averageFailedToolCalls,
-            BigDecimal toolSuccessRate
+            BigDecimal averageDuplicateToolCalls,
+            BigDecimal toolSuccessRate,
+            BigDecimal duplicateToolRate
     ) {
     }
 }
