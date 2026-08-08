@@ -329,7 +329,7 @@ function renderDetail(data) {
 }
 
 function renderEvaluationLenses(data, evaluation, steps) {
-  const duplicateRate = data.toolCalls ? data.duplicateToolCalls / data.toolCalls : null;
+  const duplicateRate = calculateDuplicateRate(data.duplicateToolCalls, data.toolCalls);
   const lenses = [
     ["Capability", evaluation ? `${evaluation.passed ? "PASS" : "FAIL"} · score ${formatScore(evaluation.score)}` : "No deterministic evaluation"],
     ["Reliability", `${escapeHtml(data.run.status)} · one observed rollout; use repeated batch rate for model reliability`],

@@ -21,7 +21,7 @@ agent execution and scoring; this service queues work, imports its sanitized
 agent-eval-workbench/
 ├── src/main/java/          # Spring Boot API, import, and persistence
 ├── src/main/resources/     # Profiles and the static evaluation panel
-├── src/test/               # Integration tests and schema 1.1 fixture
+├── src/test/               # Java/JavaScript tests and schema 1.1/1.2 fixtures
 ├── contracts/fyp-agent-service/
 ├── AGENTS.md
 ├── TODO.md
@@ -35,6 +35,7 @@ Docker Desktop is not required.
 
 ```bash
 ./mvnw test
+node --test src/test/javascript/*.test.cjs
 ./mvnw spring-boot:run
 ```
 
@@ -71,7 +72,7 @@ Password:
 
 Use Swagger for full request and response details.
 
-## Compare Replay Profiles
+## Compare Benchmark Profiles
 
 Build both applications, start Workbench, and then start the optional Netagent
 worker in another terminal:
@@ -87,20 +88,20 @@ model profiles, and set the repetition count. One batch creates
 `profiles x repetitions` persistent `QUEUED` jobs. Workers claim them normally,
 so comparison does not introduce a second execution path.
 
-The default comparison matrix contains the two official DeepSeek V4 API model
-IDs, `deepseek-v4-flash` and `deepseek-v4-pro`, at three effective reasoning
-modes: `DISABLED` (shown as None), `HIGH`, and `MAX`. The job snapshot freezes
-the profile name, model, prompt version, tool exposure, max turns, reasoning
-mode, and case schema version before the first worker claim.
+The default comparison matrix contains five supported DeepSeek V4 profiles:
+`deepseek-v4-flash` at `LOW`, `HIGH`, and `MAX`, plus `deepseek-v4-pro` at
+`HIGH` and `MAX`. The job snapshot freezes the profile name, model, prompt
+version, tool exposure, max turns, reasoning mode, and case schema version
+before the first worker claim.
 
-The comparison table reports pass rate, average score, latency, total tokens,
-tool calls, failed tool calls, and tool success rate. Pass rate uses only runs
-with an explicit benchmark evaluation; execution failures and cancellations
-are reported separately rather than treated as incorrect model answers. Tool
-success rate is `(tool calls - failed tool calls) / tool calls`.
+The comparison table keeps capability, reliability, and efficiency separate.
+It reports benchmark pass rate and average score, attempted-run reliability,
+tokens, agent steps, duration, and duplicate-tool-call rate. Execution failures
+and timeouts reduce reliability but are not rewritten as benchmark grading.
+The run detail preserves the complete trajectory as evidence.
 
 The seeded `Local Mock Case Reference` profile runs the deterministic OSPF
-replay without an API key. The six DeepSeek profiles use `DEEPSEEK_API_KEY`
+replay without an API key. The five DeepSeek profiles use `DEEPSEEK_API_KEY`
 from the worker process environment; Workbench never stores or sends the key.
 
 Run a worker for at most one claim:
@@ -115,9 +116,11 @@ marks expired timeouts and worker leases explicitly.
 
 ## Import A Netagent Run
 
-The request body is the unchanged Netagent schema 1.1 artifact. The
-`experimentId` query parameter supplies the Workbench context that is not part
-of the benchmark-owned artifact.
+The request body is an unchanged Netagent schema 1.1 or 1.2 artifact. Schema
+1.2 adds optional `agent_steps` and `duplicate_tool_calls` efficiency metrics;
+missing schema 1.1 values remain unavailable rather than being treated as zero.
+The `experimentId` query parameter supplies the Workbench context that is not
+part of the benchmark-owned artifact.
 
 ```bash
 curl -X POST \
@@ -164,3 +167,5 @@ DATABASE_PASSWORD=agent_workbench \
 - Use `TODO.md` for milestones and pending work.
 - Use `AGENTS.md` for agent-specific repo instructions.
 - Avoid adding new documentation files unless there is a clear long-term need.
+- CI runs JavaScript regression tests and the Maven `verify` lifecycle on Java
+  25 for pull requests and pushes to `main`.

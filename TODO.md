@@ -13,6 +13,8 @@ Status: complete for the current panel workflow.
 ## Milestone 1: Read-only Evaluation Panel
 
 - [x] Import the benchmark-owned Netagent schema 1.1 artifact directly.
+- [x] Import schema 1.2 agent-step and duplicate-call metrics while preserving
+  schema 1.1 missing values.
 - [x] Reject duplicate run ids and unsupported artifact shapes.
 - [x] Store query summaries in the database and complete artifacts under a
   Workbench-owned root.
@@ -46,5 +48,5 @@ Status: complete for the current panel workflow.
 - [ ] Add production-like profile.
 - [ ] Add PostgreSQL schema migrations before the first PostgreSQL deployment.
 - [ ] Document PostgreSQL and artifact directory layout.
-- [ ] Add CI for build and tests.
+- [x] Add Java 25 CI for frontend regression tests and Maven verification.
 - [ ] Add minimal systemd examples only when deployment starts.

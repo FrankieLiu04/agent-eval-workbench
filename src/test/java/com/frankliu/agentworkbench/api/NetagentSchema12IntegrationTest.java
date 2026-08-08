@@ -1,6 +1,5 @@
 package com.frankliu.agentworkbench.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -11,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -67,7 +67,12 @@ class NetagentSchema12IntegrationTest {
                 .andExpect(jsonPath("$.agentSteps").value(3))
                 .andExpect(jsonPath("$.duplicateToolCalls").value(1))
                 .andExpect(jsonPath("$.artifact.metrics.agent_steps").value(3))
-                .andExpect(jsonPath("$.artifact.metrics.duplicate_tool_calls").value(1));
+                .andExpect(jsonPath("$.artifact.metrics.duplicate_tool_calls").value(1))
+                .andExpect(jsonPath("$.artifact.trace.steps.length()").value(3))
+                .andExpect(jsonPath("$.artifact.evaluation.evaluator")
+                        .value("campus_repair_contract_v1"))
+                .andExpect(jsonPath("$.artifact.evaluation.diagnostic_score").value(1.0))
+                .andExpect(jsonPath("$.artifact.evaluation.checks.length()").value(5));
     }
 
     private static Path createArtifactRoot() {
