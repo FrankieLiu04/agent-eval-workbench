@@ -5,6 +5,7 @@
 `agent-eval-workbench` is a single Spring Boot backend service.
 
 - Java code lives under `src/main/java`.
+- React code and frontend tests live under `frontend`.
 - Tests live under `src/test`.
 - FYP service examples live under `contracts/fyp-agent-service`.
 - Keep documentation limited to `README.md`, `AGENTS.md`, and `TODO.md`.
@@ -106,10 +107,10 @@
 
 ## Verification
 
-Run tests before handing off code changes:
+Run the complete frontend and backend verification before handing off changes:
 
 ```bash
-./mvnw test
+./mvnw verify
 ```
 
 For API checks, start the app and use Swagger:

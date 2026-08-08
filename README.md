@@ -13,15 +13,17 @@ agent execution and scoring; this service queues work, imports its sanitized
 - H2 local profile
 - PostgreSQL profile for later deployment
 - Swagger/OpenAPI
-- Server-hosted HTML, CSS, and JavaScript panel with no frontend build step
+- React 19 and Vite 8 frontend, packaged into the Spring Boot application
+- System light/dark theme with a shared blue interaction palette
 
 ## Layout
 
 ```text
 agent-eval-workbench/
+├── frontend/               # React source, Vite build, and Vitest tests
 ├── src/main/java/          # Spring Boot API, import, and persistence
-├── src/main/resources/     # Profiles and the static evaluation panel
-├── src/test/               # Java/JavaScript tests and schema 1.1/1.2 fixtures
+├── src/main/resources/     # Spring profiles and seed data
+├── src/test/               # Java integration tests and schema 1.1/1.2 fixtures
 ├── contracts/fyp-agent-service/
 ├── AGENTS.md
 ├── TODO.md
@@ -34,10 +36,23 @@ agent-eval-workbench/
 Docker Desktop is not required.
 
 ```bash
-./mvnw test
-node --test src/test/javascript/*.test.cjs
+./mvnw generate-resources
 ./mvnw spring-boot:run
 ```
+
+`generate-resources` installs the pinned Node/npm runtime, runs `npm ci`, and
+builds the React application into `target/classes/static`. For frontend-only
+iteration, keep Spring Boot running and use Vite's API proxy:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the Vite development page at <http://localhost:5173/>. A complete
+`./mvnw verify` runs the production frontend build, Vitest, Java tests, and JAR
+packaging through one CI-equivalent command.
 
 Open:
 
@@ -167,5 +182,6 @@ DATABASE_PASSWORD=agent_workbench \
 - Use `TODO.md` for milestones and pending work.
 - Use `AGENTS.md` for agent-specific repo instructions.
 - Avoid adding new documentation files unless there is a clear long-term need.
-- CI runs JavaScript regression tests and the Maven `verify` lifecycle on Java
-  25 for pull requests and pushes to `main`.
+- CI runs the Maven `verify` lifecycle on Java 25; Maven owns the pinned
+  Node/npm install, React production build, Vitest, Java tests, and JAR
+  packaging.

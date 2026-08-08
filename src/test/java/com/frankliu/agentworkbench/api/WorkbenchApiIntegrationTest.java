@@ -242,7 +242,8 @@ class WorkbenchApiIntegrationTest {
         mockMvc.perform(get("/index.html"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Netagent Eval Workbench")))
-                .andExpect(content().string(containsString("launch-form")));
+                .andExpect(content().string(containsString("id=\"root\"")))
+                .andExpect(content().string(containsString("type=\"module\"")));
 
         mockMvc.perform(get("/api/v1/experiments"))
                 .andExpect(status().isOk())
