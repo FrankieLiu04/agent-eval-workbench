@@ -59,8 +59,10 @@ public final class EvaluationRunDtos {
             Response run,
             BigDecimal score,
             Long durationMs,
+            Integer agentSteps,
             Integer totalTokens,
-            Integer toolCalls
+            Integer toolCalls,
+            Integer duplicateToolCalls
     ) {
     }
 
@@ -68,12 +70,14 @@ public final class EvaluationRunDtos {
             Response run,
             BigDecimal score,
             Long durationMs,
+            Integer agentSteps,
             Integer promptTokens,
             Integer completionTokens,
             Integer totalTokens,
             Integer toolCalls,
             Integer mutatingToolCalls,
             Integer failedToolCalls,
+            Integer duplicateToolCalls,
             JsonNode artifact
     ) {
     }

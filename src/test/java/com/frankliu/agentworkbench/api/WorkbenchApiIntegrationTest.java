@@ -387,6 +387,8 @@ class WorkbenchApiIntegrationTest {
                 .andExpect(jsonPath("$.score").value(1.0))
                 .andExpect(jsonPath("$.durationMs").value(2))
                 .andExpect(jsonPath("$.totalTokens").value(380))
+                .andExpect(jsonPath("$.agentSteps").doesNotExist())
+                .andExpect(jsonPath("$.duplicateToolCalls").doesNotExist())
                 .andExpect(jsonPath("$.artifact.trace.steps[0].tool_calls[0].name")
                         .value("show_ip_ospf_neighbor"))
                 .andExpect(jsonPath("$.artifact.producer_extension.preserved").value(true))

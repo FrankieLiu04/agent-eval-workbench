@@ -99,10 +99,11 @@ public class SeedDataConfig {
     }
 
     private void ensureDeepSeekComparisonConfigs(AgentConfigRepository repository) {
-        for (String model : List.of("deepseek-v4-flash", "deepseek-v4-pro")) {
-            for (ReasoningMode mode : List.of(ReasoningMode.DISABLED, ReasoningMode.HIGH, ReasoningMode.MAX)) {
-                ensureDeepSeekProfile(repository, model, mode);
-            }
+        for (ReasoningMode mode : List.of(ReasoningMode.LOW, ReasoningMode.HIGH, ReasoningMode.MAX)) {
+            ensureDeepSeekProfile(repository, "deepseek-v4-flash", mode);
+        }
+        for (ReasoningMode mode : List.of(ReasoningMode.HIGH, ReasoningMode.MAX)) {
+            ensureDeepSeekProfile(repository, "deepseek-v4-pro", mode);
         }
     }
 

@@ -235,12 +235,17 @@ public class BenchmarkJobService {
                 && !DEEPSEEK_MODELS.contains(config.getModelName())) {
             throw new ConflictException("DeepSeek model must be deepseek-v4-flash or deepseek-v4-pro");
         }
+        if (config.getProvider() == AgentProvider.DEEPSEEK
+                && "deepseek-v4-pro".equals(config.getModelName())
+                && effectiveReasoningMode(config) == ReasoningMode.LOW) {
+            throw new ConflictException("deepseek-v4-pro does not support LOW reasoning mode");
+        }
         if (config.getProvider() == AgentProvider.LOCAL_MOCK && config.getMaxSteps() < 7) {
             throw new ConflictException("LOCAL_MOCK requires maxSteps of at least 7 for this benchmark case");
         }
         if (config.getProvider() != AgentProvider.DEEPSEEK
                 && effectiveReasoningMode(config) != ReasoningMode.DISABLED) {
-            throw new ConflictException("Reasoning HIGH and MAX are supported only for DeepSeek profiles");
+            throw new ConflictException("Reasoning LOW, HIGH, and MAX are supported only for DeepSeek profiles");
         }
     }
 

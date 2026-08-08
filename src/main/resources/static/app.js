@@ -56,12 +56,13 @@ async function loadLaunchContext() {
 
 function renderConfigOptions(configs) {
   configOptions.innerHTML = configs.length ? configs.map(item => {
-    const isComparisonProfile = item.provider === "DEEPSEEK"
-      && ["deepseek-v4-flash", "deepseek-v4-pro"].includes(item.modelName)
-      && ["DISABLED", "HIGH", "MAX"].includes(item.reasoningMode);
+    const isCurrentMatrix = item.provider === "DEEPSEEK" && (
+      (item.modelName === "deepseek-v4-flash" && ["LOW", "HIGH", "MAX"].includes(item.reasoningMode))
+      || (item.modelName === "deepseek-v4-pro" && ["HIGH", "MAX"].includes(item.reasoningMode))
+    );
     return `
       <label class="profile-option">
-        <input type="checkbox" name="agent-config" value="${item.id}" ${isComparisonProfile ? "checked" : ""}>
+        <input type="checkbox" name="agent-config" value="${item.id}" ${isCurrentMatrix ? "checked" : ""}>
         <span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.modelName)} / ${escapeHtml(item.reasoningMode)}</small></span>
       </label>`;
   }).join("") : '<p class="notice">No runnable profiles are available.</p>';
@@ -162,10 +163,12 @@ function renderBatch(batch) {
       <th><strong>${escapeHtml(profile.agentConfigName)}</strong><small>${escapeHtml(profile.model)} / ${escapeHtml(profile.reasoningMode)}</small></th>
       <td>${profile.requested - profile.queued - profile.running}/${profile.requested}</td>
       <td>${profile.evaluated ? `${profile.passed}/${profile.evaluated} (${formatPercent(profile.passRate)})` : "--"}</td>
+      <td>${formatPercent(profile.reliabilityRate)}</td>
       <td>${formatScore(profile.averageScore)}</td>
-      <td>${formatDuration(profile.averageLatencyMs)}</td>
       <td>${formatNumber(profile.averageTotalTokens)}</td>
-      <td>${formatPercent(profile.toolSuccessRate)}</td>
+      <td>${formatNumber(profile.averageAgentSteps)}</td>
+      <td>${formatDuration(profile.averageLatencyMs)}</td>
+      <td>${formatPercent(profile.duplicateToolRate)}</td>
     </tr>`).join("");
   jobState.innerHTML = `
     <div class="batch-summary">
@@ -174,7 +177,7 @@ function renderBatch(batch) {
     </div>
     <div class="comparison-scroll">
       <table class="comparison-table">
-        <thead><tr><th>Profile</th><th>Done</th><th>Pass rate</th><th>Avg score</th><th>Avg latency</th><th>Avg tokens</th><th>Tool success</th></tr></thead>
+        <thead><tr><th>Profile</th><th>Runs</th><th>Capability pass</th><th>Reliability</th><th>Avg score</th><th>Tokens</th><th>Steps</th><th>Duration</th><th>Duplicate rate</th></tr></thead>
         <tbody>${profiles}</tbody>
       </table>
     </div>
@@ -243,6 +246,7 @@ function renderRunList() {
         <h3>${escapeHtml(run.caseId || run.task)}</h3>
         <div class="run-card-meta">
           <span>${escapeHtml(run.agentModel || "unrecorded model")}</span>
+          <span>${formatNumber(item.agentSteps)} steps</span>
           <span>${formatDuration(item.durationMs)}</span>
           <span>${formatDate(run.startedAt)}</span>
         </div>
@@ -299,14 +303,17 @@ function renderDetail(data) {
     </header>
 
     <div class="metric-grid">
-      ${metric("Score", formatScore(data.score))}
+      ${metric("Capability", formatScore(data.score))}
+      ${metric("Steps", formatNumber(data.agentSteps))}
       ${metric("Duration", formatDuration(data.durationMs))}
       ${metric("Tokens", formatNumber(data.totalTokens))}
       ${metric("Tool calls", formatNumber(data.toolCalls))}
+      ${metric("Duplicate", formatNumber(data.duplicateToolCalls))}
       ${metric("Failed", formatNumber(data.failedToolCalls))}
     </div>
 
     ${artifact ? `
+      ${renderEvaluationLenses(data, evaluation, steps)}
       <section class="detail-section">
         <h3>Final answer</h3>
         <p class="answer">${escapeHtml(result?.final_answer || "No final answer recorded.")}</p>
@@ -321,6 +328,27 @@ function renderDetail(data) {
   `;
 }
 
+function renderEvaluationLenses(data, evaluation, steps) {
+  const duplicateRate = calculateDuplicateRate(data.duplicateToolCalls, data.toolCalls);
+  const lenses = [
+    ["Capability", evaluation ? `${evaluation.passed ? "PASS" : "FAIL"} · score ${formatScore(evaluation.score)}` : "No deterministic evaluation"],
+    ["Reliability", `${escapeHtml(data.run.status)} · one observed rollout; use repeated batch rate for model reliability`],
+    ["Efficiency", `${formatNumber(data.totalTokens)} tokens · ${formatNumber(data.agentSteps)} steps · ${formatDuration(data.durationMs)} · duplicate ${formatPercent(duplicateRate)}`],
+    ["Trajectory", `${steps.length} recorded steps · ${formatNumber(data.toolCalls)} tool calls · ${formatNumber(data.failedToolCalls)} failed`],
+  ];
+  return `
+    <section class="detail-section">
+      <p class="eyebrow">Evaluation lenses</p>
+      <h3>Capability × reliability × efficiency × trajectory</h3>
+      <div class="checks">${lenses.map(([name, value]) => `
+        <div class="check">
+          <span class="check-pass">VIEW</span>
+          <code>${escapeHtml(name)}</code>
+          <p>${value}</p>
+        </div>`).join("")}</div>
+    </section>`;
+}
+
 function renderChecks(evaluation) {
   if (!evaluation?.checks?.length) return "";
   const checks = evaluation.checks.map(check => `
@@ -332,7 +360,7 @@ function renderChecks(evaluation) {
   return `
     <section class="detail-section">
       <p class="eyebrow">${escapeHtml(evaluation.evaluator)} evaluator</p>
-      <h3>Scoring evidence</h3>
+      <h3>Capability evidence</h3>
       <div class="checks">${checks}</div>
     </section>`;
 }

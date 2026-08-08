@@ -75,12 +75,14 @@ public class RunMetricService {
         requireMutable(run);
         metric.setRun(run);
         metric.setLatencyMs(request.latencyMs());
+        metric.setAgentStepCount(request.agentStepCount());
         metric.setPromptTokens(request.promptTokens());
         metric.setCompletionTokens(request.completionTokens());
         metric.setTotalTokens(request.totalTokens());
         metric.setToolCallCount(request.toolCallCount());
         metric.setMutatingToolCallCount(request.mutatingToolCallCount());
         metric.setFailedToolCallCount(request.failedToolCallCount());
+        metric.setDuplicateToolCallCount(request.duplicateToolCallCount());
     }
 
     private void requireMutable(EvaluationRun run) {
@@ -94,12 +96,14 @@ public class RunMetricService {
                 metric.getId(),
                 metric.getRun().getId(),
                 metric.getLatencyMs(),
+                metric.getAgentStepCount(),
                 metric.getPromptTokens(),
                 metric.getCompletionTokens(),
                 metric.getTotalTokens(),
                 metric.getToolCallCount(),
                 metric.getMutatingToolCallCount(),
                 metric.getFailedToolCallCount(),
+                metric.getDuplicateToolCallCount(),
                 metric.getCreatedAt(),
                 metric.getUpdatedAt()
         );

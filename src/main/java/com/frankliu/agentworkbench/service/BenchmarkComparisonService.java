@@ -79,22 +79,31 @@ public class BenchmarkComparisonService {
         List<RunMetric> profileMetrics = values(jobs, metrics);
         int evaluated = (int) profileResults.stream().filter(result -> result.getPassed() != null).count();
         int passed = (int) profileResults.stream().filter(result -> Boolean.TRUE.equals(result.getPassed())).count();
-        long toolCalls = profileMetrics.stream().map(RunMetric::getToolCallCount)
-                .filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
-        long failedCalls = profileMetrics.stream().map(RunMetric::getFailedToolCallCount)
-                .filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
+        int executionFailures = count(jobs, BenchmarkJobStatus.FAILED);
+        int timedOut = count(jobs, BenchmarkJobStatus.TIMED_OUT);
+        int cancelled = count(jobs, BenchmarkJobStatus.CANCELLED);
+        int attempted = evaluated + executionFailures + timedOut;
+        long toolCalls = sum(profileMetrics, RunMetric::getToolCallCount);
+        long failedCalls = sum(profileMetrics, RunMetric::getFailedToolCallCount);
+        long duplicateCalls = sum(profileMetrics, RunMetric::getDuplicateToolCallCount);
         return new BenchmarkJobDtos.ProfileComparison(
                 first.getAgentConfig().getId(), first.getAgentConfigName(), first.getProvider(), first.getModel(),
                 first.getPromptVersion(), first.getToolExposure(), first.getReasoningMode(), jobs.size(),
                 count(jobs, BenchmarkJobStatus.QUEUED), countActive(jobs), evaluated, passed,
-                count(jobs, BenchmarkJobStatus.FAILED), count(jobs, BenchmarkJobStatus.TIMED_OUT),
-                count(jobs, BenchmarkJobStatus.CANCELLED), ratio(passed, evaluated),
+                executionFailures, timedOut, cancelled, attempted, ratio(passed, evaluated), ratio(passed, attempted),
                 average(profileResults.stream().map(EvaluationResult::getScore).toList()),
                 average(profileMetrics.stream().map(RunMetric::getLatencyMs).toList()),
                 average(profileMetrics.stream().map(RunMetric::getTotalTokens).toList()),
+                average(profileMetrics.stream().map(RunMetric::getAgentStepCount).toList()),
                 average(profileMetrics.stream().map(RunMetric::getToolCallCount).toList()),
                 average(profileMetrics.stream().map(RunMetric::getFailedToolCallCount).toList()),
-                toolCalls == 0 ? null : ratio(toolCalls - failedCalls, toolCalls));
+                average(profileMetrics.stream().map(RunMetric::getDuplicateToolCallCount).toList()),
+                toolCalls == 0 ? null : ratio(toolCalls - failedCalls, toolCalls),
+                toolCalls == 0 ? null : ratio(duplicateCalls, toolCalls));
+    }
+
+    private long sum(List<RunMetric> metrics, Function<RunMetric, Integer> extractor) {
+        return metrics.stream().map(extractor).filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
     }
 
     private <T> List<T> values(List<BenchmarkJob> jobs, Map<Long, T> byRunId) {

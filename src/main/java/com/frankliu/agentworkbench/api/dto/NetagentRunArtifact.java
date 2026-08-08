@@ -16,7 +16,7 @@ import java.time.Instant;
 
 public record NetagentRunArtifact(
         @JsonProperty("schema_version")
-        @NotBlank @Pattern(regexp = "1\\.1", message = "must be 1.1") String schemaVersion,
+        @NotBlank @Pattern(regexp = "1\\.(1|2)", message = "must be 1.1 or 1.2") String schemaVersion,
         @JsonProperty("run_id")
         @NotBlank @Size(max = 120)
         @Pattern(regexp = "[A-Za-z0-9._-]+", message = "contains unsupported characters") String runId,
@@ -53,13 +53,15 @@ public record NetagentRunArtifact(
     }
 
     public record Metrics(
+            @JsonProperty("agent_steps") @Min(0) Integer agentSteps,
             @JsonProperty("duration_seconds") @NotNull @DecimalMin("0.0") @DecimalMax("86400") BigDecimal durationSeconds,
             @JsonProperty("prompt_tokens") @Min(0) Integer promptTokens,
             @JsonProperty("completion_tokens") @Min(0) Integer completionTokens,
             @JsonProperty("total_tokens") @Min(0) Integer totalTokens,
             @JsonProperty("tool_calls") @NotNull @Min(0) Integer toolCalls,
             @JsonProperty("mutating_tool_calls") @NotNull @Min(0) Integer mutatingToolCalls,
-            @JsonProperty("failed_tool_calls") @NotNull @Min(0) Integer failedToolCalls
+            @JsonProperty("failed_tool_calls") @NotNull @Min(0) Integer failedToolCalls,
+            @JsonProperty("duplicate_tool_calls") @Min(0) Integer duplicateToolCalls
     ) {
     }
 
